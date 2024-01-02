@@ -79,21 +79,12 @@ endif()
 include(CMakeDependentOption)
 
 # Option to enable building all examples, defaults to ON if FLAMEPGU is the top level cmake, else OFF
-cmake_dependent_option(FLAMEGPU_BUILD_ALL_EXAMPLES "Enable building all FLAMEGPU examples" ON "FLAMEGPU_PROJECT_IS_TOP_LEVEL" OFF)
+cmake_dependent_option(FLAMEGPU_BUILD_ALL "Enable building all FLAMEGPU examples" ON "FLAMEGPU_PROJECT_IS_TOP_LEVEL" OFF)
 
-# Options to enable building individual examples, if FLAMEGPU_BUILD_ALL_EXAMPLES is off. 
-# Dependent options hide these from the CMake GUI if FLAMEGPU_BUILD_ALL_EXAMPLES is on, or if it is not the top level project
-cmake_dependent_option(FLAMEGPU_BUILD_EXAMPLE_BOIDS_BRUTEFORCE "Enable building examples/cpp/boids_bruteforce" OFF "FLAMEGPU_PROJECT_IS_TOP_LEVEL; NOT FLAMEGPU_BUILD_ALL_EXAMPLES" OFF)
-cmake_dependent_option(FLAMEGPU_BUILD_EXAMPLE_BOIDS_SPATIAL3D "Enable building examples/cpp/boids_spatial3D" OFF "FLAMEGPU_PROJECT_IS_TOP_LEVEL; NOT FLAMEGPU_BUILD_ALL_EXAMPLES" OFF)
-cmake_dependent_option(FLAMEGPU_BUILD_EXAMPLE_RTC_BOIDS_BRUTEFORCE "Enable building examples/cpp_rtc/boids_bruteforce" OFF "FLAMEGPU_PROJECT_IS_TOP_LEVEL; NOT FLAMEGPU_BUILD_ALL_EXAMPLES" OFF)
-cmake_dependent_option(FLAMEGPU_BUILD_EXAMPLE_RTC_BOIDS_SPATIAL3D "Enable building examples/cpp_rtc/boids_spatial3D" OFF "FLAMEGPU_PROJECT_IS_TOP_LEVEL; NOT FLAMEGPU_BUILD_ALL_EXAMPLES" OFF)
-cmake_dependent_option(FLAMEGPU_BUILD_EXAMPLE_CIRCLES_BRUTEFORCE "Enable building examples/cpp/circles_bruteforcespatial3D" OFF "FLAMEGPU_PROJECT_IS_TOP_LEVEL; NOT FLAMEGPU_BUILD_ALL_EXAMPLES" OFF)
-cmake_dependent_option(FLAMEGPU_BUILD_EXAMPLE_CIRCLES_SPATIAL3D "Enable building examples/cpp/circles_spatial3D" OFF "FLAMEGPU_PROJECT_IS_TOP_LEVEL; NOT FLAMEGPU_BUILD_ALL_EXAMPLES" OFF)
-cmake_dependent_option(FLAMEGPU_BUILD_EXAMPLE_GAME_OF_LIFE "Enable building examples/cpp/game_of_life" OFF "FLAMEGPU_PROJECT_IS_TOP_LEVEL; NOT FLAMEGPU_BUILD_ALL_EXAMPLES" OFF)
-cmake_dependent_option(FLAMEGPU_BUILD_EXAMPLE_HOST_FUNCTIONS "Enable building examples/cpp/host_functions" OFF "FLAMEGPU_PROJECT_IS_TOP_LEVEL; NOT FLAMEGPU_BUILD_ALL_EXAMPLES" OFF)
-cmake_dependent_option(FLAMEGPU_BUILD_EXAMPLE_ENSEMBLE "Enable building examples/cpp/ensemble" OFF "FLAMEGPU_PROJECT_IS_TOP_LEVEL; NOT FLAMEGPU_BUILD_ALL_EXAMPLES" OFF)
-cmake_dependent_option(FLAMEGPU_BUILD_EXAMPLE_SUGARSCAPE "Enable building examples/cpp/sugarscape" OFF "FLAMEGPU_PROJECT_IS_TOP_LEVEL; NOT FLAMEGPU_BUILD_ALL_EXAMPLES" OFF)
-cmake_dependent_option(FLAMEGPU_BUILD_EXAMPLE_DIFFUSION "Enable building examples/cpp/diffusion" OFF "FLAMEGPU_PROJECT_IS_TOP_LEVEL; NOT FLAMEGPU_BUILD_ALL_EXAMPLES" OFF)
+# Options to enable building individual projects, if FLAMEGPU_BUILD_ALL is off.
+# Dependent options hide these from the CMake GUI if FLAMEGPU_BUILD_ALL is on, or if it is not the top level project
+cmake_dependent_option(FLAMEGPU_BUILD_WORM_OXYGEN "Enable building babots/worm_oxygen" OFF "FLAMEGPU_PROJECT_IS_TOP_LEVEL; NOT FLAMEGPU_BUILD_ALL_EXAMPLES" OFF)
+
 
 option(FLAMEGPU_BUILD_PYTHON "Enable python bindings via SWIG" OFF)
 
@@ -121,40 +112,11 @@ add_subdirectory(src "${PROJECT_BINARY_DIR}/FLAMEGPU")
 # Set as startup project
 set_property(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"  PROPERTY VS_STARTUP_PROJECT flamegpu)
 
-# Add each example
-if(FLAMEGPU_BUILD_ALL_EXAMPLES OR FLAMEGPU_BUILD_EXAMPLE_BOIDS_BRUTEFORCE)
-    add_subdirectory(examples/cpp/boids_bruteforce)
+# Add each project
+if(FLAMEGPU_BUILD_WORM_OXYGEN OR FLAMEGPU_BUILD_ALL)
+    add_subdirectory(babots/worm_oxygen)
 endif()
-if(FLAMEGPU_BUILD_ALL_EXAMPLES OR FLAMEGPU_BUILD_EXAMPLE_BOIDS_SPATIAL3D)
-    add_subdirectory(examples/cpp/boids_spatial3D)
-endif()
-if(FLAMEGPU_BUILD_ALL_EXAMPLES OR FLAMEGPU_BUILD_EXAMPLE_RTC_BOIDS_BRUTEFORCE)
-    add_subdirectory(examples/cpp_rtc/boids_bruteforce)
-endif()
-if(FLAMEGPU_BUILD_ALL_EXAMPLES OR FLAMEGPU_BUILD_EXAMPLE_RTC_BOIDS_SPATIAL3D)
-    add_subdirectory(examples/cpp_rtc/boids_spatial3D)
-endif()
-if(FLAMEGPU_BUILD_ALL_EXAMPLES OR FLAMEGPU_BUILD_EXAMPLE_CIRCLES_BRUTEFORCE)
-    add_subdirectory(examples/cpp/circles_bruteforce)
-endif()
-if(FLAMEGPU_BUILD_ALL_EXAMPLES OR FLAMEGPU_BUILD_EXAMPLE_CIRCLES_SPATIAL3D)
-    add_subdirectory(examples/cpp/circles_spatial3D)
-endif()
-if(FLAMEGPU_BUILD_ALL_EXAMPLES OR FLAMEGPU_BUILD_EXAMPLE_GAME_OF_LIFE)
-    add_subdirectory(examples/cpp/game_of_life)
-endif()
-if(FLAMEGPU_BUILD_ALL_EXAMPLES OR FLAMEGPU_BUILD_EXAMPLE_HOST_FUNCTIONS)
-    add_subdirectory(examples/cpp/host_functions)
-endif()
-if(FLAMEGPU_BUILD_ALL_EXAMPLES OR FLAMEGPU_BUILD_EXAMPLE_ENSEMBLE)
-    add_subdirectory(examples/cpp/ensemble)
-endif()
-if(FLAMEGPU_BUILD_ALL_EXAMPLES OR FLAMEGPU_BUILD_EXAMPLE_SUGARSCAPE)
-    add_subdirectory(examples/cpp/sugarscape)
-endif()
-if(FLAMEGPU_BUILD_ALL_EXAMPLES OR FLAMEGPU_BUILD_EXAMPLE_DIFFUSION)
-    add_subdirectory(examples/cpp/diffusion)
-endif()
+
 # Add the tests directory (if required)
 if(FLAMEGPU_BUILD_TESTS OR FLAMEGPU_BUILD_TESTS_DEV)
     # Enable Ctest

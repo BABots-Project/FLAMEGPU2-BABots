@@ -106,20 +106,23 @@ Building via CMake is a three step process, with slight differences depending on
 
 To build under Linux using the command line, you can perform the following steps.
 
-For example, to configure CMake for `Release` builds, for consumer Pascal GPUs (Compute Capability `61`), with python bindings enabled, producing the static library and `boids_bruteforce` example binary.
+For example, to configure CMake for `Release` builds.
 
 ```bash
 # Create the build directory and change into it
 mkdir -p build && cd build
 
 # Configure CMake from the command line passing configure-time options. 
-cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_ARCHITECTURES=61 -DFLAMEGPU_BUILD_PYTHON=ON
+cmake .. -DCMAKE_BUILD_TYPE=Release -DFLAMEGPU_VISUALISATION=ON
 
-# Build the required targets. In this case all targets
-cmake --build . --target flamegpu boids_bruteforce -j 8
+# Build the required targets
+cmake --build . --target flamegpu worm_oxygen -j 8
 
 # Alternatively make can be invoked directly
-make flamegpu boids_bruteforce -j8
+make flamegpu worm_oxygen -j8
+
+# To launch it
+./bin/Release/worm_oxygen -s 0
 
 ```
 
@@ -144,19 +147,7 @@ REM Alternatively, build from the command line specifying the build configuratio
 cmake --build . --config Release --target flamegpu boids_bruteforce --verbose
 ```
 
-#### Configuring and Building a single example
 
-It is also possible to configure and build individual examples as standalone CMake projects.
-
-I.e. to configure and build `game_of_life` example in release mode from the command line, using linux as an example:
-
-```bash
-cd examples/game_of_life
-mkdir -p build
-cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_ARCHITECTURES=61
-cmake --build . --target all
-```
 
 #### CMake Configuration Options
 
@@ -222,17 +213,6 @@ For a full list of available targets, run the following after configuring CMake:
 cmake --build . --target help
 ```
 
-## Usage
-
-Once compiled individual models can be executed from the command line, with a range of default command line arguments depending on whether the model implements a single Simulation, or an Ensemble of simulations.
-
-To see the available command line arguments use the `-h` or `--help` options, for either C++ or python models.
-
-I.e. for a `Release` build of the `game_of_life` model, run:
-
-```bash
-./bin/Release/game_of_life --help
-```
 
 ### Visual Studio
 

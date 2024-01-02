@@ -1,15 +1,15 @@
-# Minimum CMake version 3.18 for CUDA --std=c++17 
+# Set the minimum cmake version to that which supports cuda natively.
 cmake_minimum_required(VERSION 3.18...3.25 FATAL_ERROR)
 
 # Set the location of the ROOT flame gpu project relative to this CMakeList.txt
-get_filename_component(FLAMEGPU_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../../.. REALPATH)
+get_filename_component(FLAMEGPU_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../.. REALPATH)
 
 # Handle CMAKE_CUDA_ARCHITECTURES gracefully
 include(${FLAMEGPU_ROOT}/cmake/CUDAArchitectures.cmake)
-flamegpu_init_cuda_architectures(PROJECT game_of_life)
+flamegpu_init_cuda_architectures(PROJECT worm_oxygen)
 
 # Name the project and enable required languages
-project(game_of_life CXX CUDA)
+project(worm_oxygen CXX CUDA)
 
 # Include common rules.
 include(${FLAMEGPU_ROOT}/cmake/common.cmake)
@@ -28,7 +28,3 @@ flamegpu_add_executable("${PROJECT_NAME}" "${ALL_SRC}" "${FLAMEGPU_ROOT}" "${PRO
 
 # Also set as startup project (if top level project)
 set_property(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"  PROPERTY VS_STARTUP_PROJECT "${PROJECT_NAME}")
-
-# Set the default (visual studio) debugger configure_file
-set_target_properties("${PROJECT_NAME}" PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-                                                   VS_DEBUGGER_COMMAND_ARGUMENTS "-s 10")
