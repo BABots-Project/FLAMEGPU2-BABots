@@ -1,5 +1,5 @@
-FROM nvidia/cuda:12.3.0-devel-ubuntu22.04
-
+FROM nvidia/cuda:11.8.0-devel-ubuntu22.04
+ENV DEBIAN_FRONTEND=noninteractive
 # For now, abort for non-x86 arch's just in case, as uri's are baked for x86
 RUN set -eux; \
     arch="$(dpkg --print-architecture)"; \
@@ -32,15 +32,15 @@ RUN set -eux; \
 # Copy FLAMEGPU2 configure and build
 COPY . /opt/FLAMEGPU2-babots
 RUN set -eux; \
-    cd /opt/FLAMEGPU2 ;\
-    mkdir -p build && cd build ;\
+    cd /opt/FLAMEGPU2-babots ;\
+    mkdir -p /opt/FLAMEGPU2-babots/build && cd /opt/FLAMEGPU2-babots/build ;\
     cmake .. -DFLAMEGPU_SEATBELTS=OFF -DCMAKE_BUILD_TYPE=Release;\
     #change target here
-    cmake --build . --target boids_bruteforce -j `nproc`
+    cmake --build . --target worm_aggregation -j `nproc`
 
-CMD ./bin/Release/boids_bruteforce
+CMD cd /opt/FLAMEGPU2-babots/build && ./bin/Release/worm_aggregation -s 2000 -i ../babots/worm_aggregation/src/parameters.json
 # set an env var CUDA_HOME so nvrtc can be found by FLAME GPU2 at runtime
 ENV CUDA_HOME=/usr/local/cuda
 # set an env var FLAMEPGU_INC_DIR so FLAME GPU 2's include directory can be found at runtime, when not executing from the build dir.
-ENV FLAMEGPU_INC_DIR=/opt/FLAMEGPU2-circles-benchmark/build/_deps/flamegpu2-src/include
-ENV FLAMEGPU2_INC_DIR=/opt/FLAMEGPU2-circles-benchmark/build/_deps/flamegpu2-src/include
+ENV FLAMEGPU_INC_DIR=/opt/FLAMEGPU2-worm_aggregation/build/_deps/flamegpu2-src/include
+ENV FLAMEGPU2_INC_DIR=/opt/FLAMEGPU2-worm_aggregation/build/_deps/flamegpu2-src/include

@@ -6,10 +6,10 @@ get_filename_component(FLAMEGPU_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../.. REALPATH)
 
 # Handle CMAKE_CUDA_ARCHITECTURES gracefully
 include(${FLAMEGPU_ROOT}/cmake/CUDAArchitectures.cmake)
-flamegpu_init_cuda_architectures(PROJECT worm_oxygen)
+flamegpu_init_cuda_architectures(PROJECT worm_aggregation)
 
 # Name the project and enable required languages
-project(worm_oxygen CXX CUDA)
+project(worm_aggregation CXX CUDA)
 
 # Include common rules.
 include(${FLAMEGPU_ROOT}/cmake/common.cmake)

@@ -83,7 +83,7 @@ cmake_dependent_option(FLAMEGPU_BUILD_ALL "Enable building all FLAMEGPU examples
 
 # Options to enable building individual projects, if FLAMEGPU_BUILD_ALL is off.
 # Dependent options hide these from the CMake GUI if FLAMEGPU_BUILD_ALL is on, or if it is not the top level project
-cmake_dependent_option(FLAMEGPU_BUILD_WORM_OXYGEN "Enable building babots/worm_oxygen" OFF "FLAMEGPU_PROJECT_IS_TOP_LEVEL; NOT FLAMEGPU_BUILD_ALL_EXAMPLES" OFF)
+cmake_dependent_option(FLAMEGPU_BUILD_WORM_AGGREGATION "Enable building babots/worm_aggregation" OFF "FLAMEGPU_PROJECT_IS_TOP_LEVEL; NOT FLAMEGPU_BUILD_ALL_EXAMPLES" OFF)
 
 
 option(FLAMEGPU_BUILD_PYTHON "Enable python bindings via SWIG" OFF)
@@ -113,8 +113,8 @@ add_subdirectory(src "${PROJECT_BINARY_DIR}/FLAMEGPU")
 set_property(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"  PROPERTY VS_STARTUP_PROJECT flamegpu)
 
 # Add each project
-if(FLAMEGPU_BUILD_WORM_OXYGEN OR FLAMEGPU_BUILD_ALL)
-    add_subdirectory(babots/worm_oxygen)
+if(FLAMEGPU_BUILD_WORM_AGGREGATION OR FLAMEGPU_BUILD_ALL)
+    add_subdirectory(babots/worm_aggregation)
 endif()
 
 # Add the tests directory (if required)
