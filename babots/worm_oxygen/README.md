@@ -1,5 +1,3 @@
----
-
 ### PARAMETERS:
 
 - **Environment Size:** 20 mm
@@ -9,5 +7,4 @@
 - **Oxygen Consumption:** 7E-4
 - **Oxygen Initial value:** 21E-2
 
---- 
 
