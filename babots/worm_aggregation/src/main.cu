@@ -11,13 +11,13 @@ FLAMEGPU_INIT_FUNCTION(create_agents) {
         for (unsigned int i = 0; i < AGENT_COUNT; ++i) {
             auto t = t_pop.newAgent();
 
-            t.setVariable < float > ("x", FLAMEGPU -> random.uniform < float > () * ENV_WIDTH );
-            t.setVariable < float > ("y", FLAMEGPU -> random.uniform < float > () * ENV_WIDTH );
+            t.setVariable < float > ("x", FLAMEGPU -> random.uniform < float > (75.0f/128.0f,85.0f/128.0f)  *ENV_WIDTH);
+            t.setVariable < float > ("y", FLAMEGPU -> random.uniform < float > (75.0f/128.0f,85.0f/128.0f) *ENV_WIDTH );
             t.setVariable <float > ("prev_direction_x", 0.0f);
             t.setVariable <float > ("prev_direction_y", 0.0f);
             // Calculate grid coordinatesfor the agent
-              int grid_x =(int)  ((t.getVariable <float > ("x") / 20.0f) * 128);
-              int grid_y =  (int)  ((t.getVariable <float > ("y")/20.0f) * 128);
+            int grid_x =(int)  ((t.getVariable <float > ("x") / 20.0f) * 128);
+            int grid_y =  (int)  ((t.getVariable <float > ("y")/20.0f) * 128);
 
             countAgent[grid_x][grid_y]++;
         }
@@ -32,6 +32,9 @@ FLAMEGPU_INIT_FUNCTION(create_agents) {
         for (int i = 0; i < 128; ++i) {
             for (int j = 0; j < 128; ++j) {
                 attractant_grid[i][j] = (countAgent[i][j] / pow(2,(20.0/128.0)))*0.01f*0.01f;
+                if (i >= 59 && i <= 68 && j >= 59 && j <= 68) {
+                    attractant_grid[i][j] += 1000.0f;
+                }
             }
         }
 
@@ -44,7 +47,7 @@ FLAMEGPU_INIT_FUNCTION(create_agents) {
 }
 
 FLAMEGPU_STEP_FUNCTION(update_grids) {
-    int grid_size = FLAMEGPU -> environment.getProperty < int > ("GRID_SIZE");
+        int grid_size = FLAMEGPU -> environment.getProperty < int > ("GRID_SIZE");
         float env_size = FLAMEGPU -> environment.getProperty < float > ("ENV_WIDTH");
         int attractant = FLAMEGPU -> environment.getProperty < int > ("ATTRACTANT");
         int repellent = FLAMEGPU -> environment.getProperty < int > ("REPELLENT");
@@ -125,13 +128,15 @@ FLAMEGPU_STEP_FUNCTION(update_grids) {
 
                 }
                 if (attractant != 0) {
+                    float attractant_creation =  FLAMEGPU->environment.getProperty<float>("ATTRACTANT_CREATION");
                     float laplacianO = (attractant_grid[next_x][j] + attractant_grid[previous_x][j] + attractant_grid[i][next_y] +attractant_grid[i][previous_y] - 4 * attractant_grid[i][j]) / h;
-                    new_attractant_grid[i][j] = -0.01f*attractant_grid[i][j] + 0.000001f * laplacianO * attractant_grid[i][j] +0.01f * ((density_grid[i][j]) / h);
+                    new_attractant_grid[i][j] = -0.01f*attractant_grid[i][j] + 0.000001f * laplacianO * attractant_grid[i][j] +attractant_creation * ((density_grid[i][j]) / h);
 
                 }
                 if (repellent != 0) {
+                    float repellent_creation =  FLAMEGPU->environment.getProperty<float>("REPELLENT_CREATION");
                     float laplacianO =(repellent_grid[next_x][j] + repellent_grid[previous_x][j] + repellent_grid[i][next_y] +repellent_grid[i][previous_y] - 4 * repellent_grid[i][j]) / h;
-                    new_repellent_grid[i][j] = -0.001f*repellent_grid[i][j] + 0.00001f * laplacianO * repellent_grid[i][j] +0.001f * ((density_grid[i][j]) / h);
+                    new_repellent_grid[i][j] = -0.001f*repellent_grid[i][j] + 0.00001f * laplacianO * repellent_grid[i][j] +repellent_creation * ((density_grid[i][j]) / h);
                 }
             }
         }
@@ -147,10 +152,11 @@ FLAMEGPU_STEP_FUNCTION(update_grids) {
             for (int i = 0; i < 128; ++i) {
                 for (int j = 0; j < 128; ++j) {
                     attractant_grid[i][j] += new_attractant_grid[i][j];
-
+                    if (i >= 59 && i <= 68 && j >= 59 && j <= 68)  {
+                        attractant_grid[i][j] += 1.0f;
+                    }
                 }
             }
-
         }
         if (oxygen !=0){
             for (int i = 0; i < 128; ++i) {
@@ -287,22 +293,24 @@ FLAMEGPU_AGENT_FUNCTION(input_message, flamegpu::MessageSpatial2D, flamegpu::Mes
     speed = (18.5f * sensed_oxygen * sensed_oxygen - 0.398f * sensed_oxygen + 0.0225f)/100;
   }
   if (attractant != 0 && repellent != 0 && oxygen ==0) {
-    float V_U = beta_attractant * log10(alpha_attractant + sensed_phero);
-    float V_Ur = -beta_repellent * log10(alpha_repellent + sensed_repellent);
-    speed = V_Ur + V_U;
-    //printf("%f , " ,speed);
-    if (speed < 0) {
-      if (sensed_repellent != best_r) {
-        new_direction_x = cosf(random_angle) + ( 0.01f * best_r) * repellent_direction_x;
-        new_direction_y = sinf(random_angle) + ( 0.01f * best_r) * repellent_direction_y;
+      if (sensed_phero > 0.02f) {
+          float V_U = beta_attractant * log10(alpha_attractant + sensed_phero);
+          float V_Ur = -beta_repellent * log10(alpha_repellent + sensed_repellent);
+          speed = V_Ur + V_U;
+          //printf("%f , " ,speed);
+          if (speed < 0) {
+              if (sensed_repellent != best_r) {
+                  new_direction_x = cosf(random_angle) + (0.01f * best_r) * repellent_direction_x;
+                  new_direction_y = sinf(random_angle) + (0.01f * best_r) * repellent_direction_y;
+              }
+          } else {
+              if (sensed_phero != best) {
+                  new_direction_x = cosf(random_angle) + (0.01f * best) * attractant_direction_x;
+                  new_direction_y = sinf(random_angle) + (0.01f * best) * attractant_direction_y;
+              }
+          }
+          speed = abs(speed);
       }
-    } else {
-      if (sensed_phero != best) {
-        new_direction_x = cosf(random_angle) + ( 0.01f * best) * attractant_direction_x;
-        new_direction_y = sinf(random_angle) + ( 0.01f * best) * attractant_direction_y;
-      }
-    }
-    speed = abs(speed);
   }
 if (attractant != 0 && repellent != 0 && oxygen != 0 ) {
     float V_U = beta_attractant * log10(alpha_attractant + sensed_phero);
@@ -395,10 +403,11 @@ int main(int argc, const char ** argv) {
         //strenght of attraction
         env.newProperty<float>("BETA_ATTRACTANT",0.001111f);
         env.newProperty<float>("BETA_REPELLENT",0.001111f);
+        env.newProperty<float>("ATTRACTANT_CREATION",0.01f);
 //concentration scale
         env.newProperty<float>("ALPHA_ATTRACTANT",15);
         env.newProperty<float>("ALPHA_REPELLENT",15);
-
+        env.newProperty<float>("REPELLENT_CREATION",0.001f);
         env.newProperty < float > ("H", 0.5f);
 
         env.newProperty < int > ("OXYGEN", 0);
@@ -437,8 +446,10 @@ int main(int argc, const char ** argv) {
   ui.newEnvironmentPropertyToggle < int > ("PHEROMONES");
   ui.newEnvironmentPropertySlider <float > ("BETA_ATTRACTANT", 0.0001f, 0.005f);
   ui.newEnvironmentPropertySlider <float > ("ALPHA_ATTRACTANT", 10.0f, 20.0f);
+  ui.newEnvironmentPropertySlider <float > ("ATTRACTANT_CREATION", 0.0f, 0.1f);
   ui.newEnvironmentPropertySlider <float > ("BETA_REPELLENT", 0.0001f, 0.005f);
   ui.newEnvironmentPropertySlider <float > ("ALPHA_REPELLENT", 10.0f, 20.0f);
+  ui.newEnvironmentPropertySlider <float > ("REPELLENT_CREATION", 0.0f, 0.01f);
   ui.newEnvironmentPropertySlider < int > ("SENSING_RANGE", 0, 20);
 
   ui.newSeparator();
@@ -462,10 +473,29 @@ int main(int argc, const char ** argv) {
   pen.addVertex(ENV_WIDTH, ENV_WIDTH, 0);
   pen.addVertex(ENV_WIDTH, 0, 0);
   pen.addVertex(0, 0, 0);
+// Calculate the center of the environment
+float centerX = ENV_WIDTH / 2.0f;
+float centerY = ENV_WIDTH / 2.0f;
+
+// Define the size of the square
+float squareSize = (ENV_WIDTH / 128.0f)*10;
+
+// Create a new polyline sketch
+flamegpu::visualiser::LineVis pen2 = m_vis.newPolylineSketch(1.0f, 0.0f, 0.0f, 0.8f);
+
+// Add vertices to draw the square
+pen2.addVertex(centerX - squareSize / 2, centerY - squareSize / 2, 0); // Top-left corner
+pen2.addVertex(centerX + squareSize / 2, centerY - squareSize / 2, 0); // Top-right corner
+pen2.addVertex(centerX + squareSize / 2, centerY + squareSize / 2, 0); // Bottom-right corner
+pen2.addVertex(centerX - squareSize / 2, centerY + squareSize / 2, 0); // Bottom-left corner
+pen2.addVertex(centerX - squareSize / 2, centerY - squareSize / 2, 0); // Back to top-left to complete the square
+
+// Close the square
+pen2.addVertex(centerX - squareSize / 2, centerY - squareSize / 2, 0);
   m_vis.activate();
 #endif
     cuda_model.simulate();
-    cuda_model.exportData("../babots/worm_aggregation/src/log.json");
+    cuda_model.exportData("/home/aymeric/CLionProjects/FLAMEGPU2-babots/babots/worm_aggregation/src/log.json");
 
 #ifdef FLAMEGPU_VISUALISATION
   m_vis.join();
