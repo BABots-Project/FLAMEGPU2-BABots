@@ -364,7 +364,7 @@ int main(int argc, const char ** argv) {
 
     const float ENV_WIDTH = 20;
     const unsigned int AGENT_COUNT = 40 * ENV_WIDTH * ENV_WIDTH;
-
+    const int BABOTS = 100;
 
     flamegpu::ModelDescription model("V2.1");
 
@@ -389,6 +389,7 @@ int main(int argc, const char ** argv) {
     {
         flamegpu::EnvironmentDescription env = model.Environment();
         env.newProperty < unsigned int > ("AGENT_COUNT", AGENT_COUNT);
+        env.newProperty < int > ("BABOTS", BABOTS);
         env.newProperty <float > ("ENV_WIDTH", ENV_WIDTH);
         env.newProperty <int > ("GRID_SIZE", 128);
         env.newProperty <float > ("PERSISTENCE_FACTOR", 0.8f);
