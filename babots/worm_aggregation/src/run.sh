@@ -15,7 +15,7 @@ LOG_FILENAME="$1"
 
 
 # Launch the executable
-"$EXE_PATH" -s 1000 -i "$JSON_PATH"
+"$EXE_PATH" -s 3000 -i "$JSON_PATH"
 
 # Check if log.json exists
 if [ -f "log.json" ]; then
