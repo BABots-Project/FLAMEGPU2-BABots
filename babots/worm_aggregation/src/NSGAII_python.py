@@ -75,17 +75,15 @@ parameter_ranges = {
     "AGENT_COUNT": (1, 100),
     "BABOTS": (1, 100),
     "PERSISTENCE_FACTOR": (0.1, 0.9),
-    "OXYGEN_CONSUMPTION": (0.0005, 0.001),
-    "OXYGEN_GLOBAL": (0.0, 0.21),
-    "OXYGEN_DIFFUSION": (0.001, 0.003),
-    "SENSING_RANGE": (1, 20),
-    "BETA_ATTRACTANT": (0.001, 0.002),
-    "BETA_REPELLENT": (0.001, 0.002),
+    "SENSING_RANGE": (1, 30),
+    "BETA_ATTRACTANT": (0.0011, 0.002),
+    "BETA_REPELLENT": (0.0011, 0.002),
     "ATTRACTANT_CREATION": (0.0, 0.015),
     "ALPHA_ATTRACTANT": (15, 15),
     "ALPHA_REPELLENT": (15, 15),
     "REPELLENT_CREATION": (0.0, 0.0015),
-    "H": (0, 1)
+    "OXYGEN":(0,0),
+    "H": (0,0)
 }
 
 # Functions to create, mutate, and crossover individuals
@@ -233,7 +231,7 @@ def non_dominating_curve_plotter(objective1_values, objective2_values):
 
 # Parameters
 population = 10
-max_gen = 5
+max_gen = 20
 mutation_rate = 0.3
 
 # Running NSGA-II
