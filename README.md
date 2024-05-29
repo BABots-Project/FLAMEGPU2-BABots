@@ -1,14 +1,30 @@
+Here's a polished version of your README:
 
-## Documentation and Support
-Please refer to the official flameGPU2 git at https://github.com/FLAMEGPU/FLAMEGPU2
+---
 
-## Use of the DockerFile
-Install docker:
-https://www.docker.com/get-started/
+# FLAMEGPU2 Documentation and Support
 
-Install GPU compatibility for docker:
-https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
+For comprehensive documentation and support, please visit the official [FLAMEGPU2 GitHub repository](https://github.com/FLAMEGPU/FLAMEGPU2).
 
-run the docker image:
-sudo docker build -t flamegpu .
-sudo docker run --runtime=nvidia --gpus all flamegpu
+## Using the DockerFile
+
+### Step 1: Install Docker
+To get started with Docker, follow the installation instructions on the [Docker website](https://www.docker.com/get-started/).
+
+### Step 2: Enable GPU Compatibility for Docker
+Ensure your Docker setup supports GPU by following the installation guide for NVIDIA's container toolkit [here](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html).
+
+### Step 3: Build and Run the Docker Image
+
+1. **Build the Docker Image:**
+    ```bash
+    sudo docker build -t flamegpu .
+    ```
+
+2. **Run the Docker Container:**
+    ```bash
+    sudo docker run --runtime=nvidia --gpus all flamegpu
+    ```
+
+---
+
