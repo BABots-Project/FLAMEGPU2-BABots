@@ -65,8 +65,8 @@ def genetic_algorithm(pop_size, generations, mutation_rate=0.3):
     return archive
 
 # Parameters
-pop_size = 50
-generations = 100
+pop_size = 4
+generations = 2
 
 # Run the genetic algorithm
 archive = genetic_algorithm(pop_size, generations)

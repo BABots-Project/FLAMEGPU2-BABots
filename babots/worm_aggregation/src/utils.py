@@ -1,6 +1,7 @@
 import numpy as np
 import random
-
+import json
+import subprocess
 class Agent:
     def __init__(self, position, speed_x, speed_y):
         self.position = position
@@ -82,6 +83,9 @@ def generate_random_agents(num_agents):
     for _ in range(num_agents):
         agents.append(Agent((random.uniform(0, 20), random.uniform(0, 20)),random.uniform(-10, 10),random.uniform(-10, 10)))
     return agents
+def individual_to_json(individual):
+    return json.dumps({"environment": {param: individual.to_list()[i] for i, param in enumerate(parameter_ranges.keys())}})
+
 def create_phenotype(genotype,gen,i):
     print("generation: "+ str(gen)+" individual: "+str(i))
     with open("parameters.json", "w") as f:

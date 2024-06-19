@@ -13,8 +13,8 @@ FLAMEGPU_INIT_FUNCTION(create_agents) {
         for (unsigned int i = 0; i < AGENT_COUNT; ++i) {
             auto t = t_pop.newAgent();
 
-            t.setVariable < float > ("x", FLAMEGPU -> random.uniform < float > (0.0f,20.0f)  *ENV_WIDTH);
-            t.setVariable < float > ("y", FLAMEGPU -> random.uniform < float > (0.0f,20.0f) *ENV_WIDTH );
+            t.setVariable < float > ("x", FLAMEGPU -> random.uniform < float > (0.0f,1.0f)  *ENV_WIDTH);
+            t.setVariable < float > ("y", FLAMEGPU -> random.uniform < float > (0.0f,1.0f) *ENV_WIDTH );
             t.setVariable <float > ("speed_x", 0.0f);
             t.setVariable <float > ("speed_y", 0.0f);
             t.setVariable <float > ("prev_direction_x", 0.0f);
@@ -65,10 +65,10 @@ FLAMEGPU_INIT_FUNCTION(create_agents) {
         for (int i = 0; i < 128; ++i) {
             for (int j = 0; j < 128; ++j) {
                 attractant_grid[i][j] = (countAgent[i][j] / pow(2,(20.0/128.0)))*0.01f*0.01f;
-
+/*
                 if (i >= 59 && i <= 68 && j >= 59 && j <= 68) {
                     attractant_grid[i][j] += 1000.0f;
-                }
+                }*/
             }
         }
 
@@ -143,40 +143,7 @@ FLAMEGPU_STEP_FUNCTION(update_grids) {
         }
 
 
-        for (const auto & agent: FLAMEGPU -> agent("worm_2").getPopulationData()) {
-            // Access agent position variables
-            unsigned int agent_id = agent.getID();
-            agent_x = agent.getVariable <float > ("x");
-            agent_y = agent.getVariable <float > ("y");
-            // Calculate grid coordinatesfor the agent
-            int grid_x =(int)  ((agent_x / 20.0f) * 128);
-            int grid_y =  (int)  ((agent_y/20.0f)* 128);
-            if (grid_x > 128){
-                grid_x=0;
-            }
-            if (grid_y >128){
-                grid_y=0;
-            }
-            density_grid_2[grid_x][grid_y]++;
-            //file << timestep << "," << agent_id << "," << agent_x << "," << agent_y << "\n";
-        }
-    for (const auto & agent: FLAMEGPU -> agent("worm_3").getPopulationData()) {
-        // Access agent position variables
-        unsigned int agent_id = agent.getID();
-        agent_x = agent.getVariable <float > ("x");
-        agent_y = agent.getVariable <float > ("y");
-        // Calculate grid coordinatesfor the agent
-        int grid_x =(int)  ((agent_x / 20.0f) * 128);
-        int grid_y =  (int)  ((agent_y/20.0f)* 128);
-        if (grid_x > 128){
-            grid_x=0;
-        }
-        if (grid_y >128){
-            grid_y=0;
-        }
-        density_grid_3[grid_x][grid_y]++;
-        //file << timestep << "," << agent_id << "," << agent_x << "," << agent_y << "\n";
-    }
+
 
         for (int i = 0; i < 128; ++i) {
             for (int j = 0; j < 128; ++j) {
@@ -200,7 +167,7 @@ FLAMEGPU_STEP_FUNCTION(update_grids) {
 
                 if (oxygen != 0) {
 
-                    float oxygen_consumption = FLAMEGPU->environment.getProperty<float>("OXYGEN_CONSUMPTON");
+                    float oxygen_consumption = FLAMEGPU->environment.getProperty<float>("OXYGEN_CONSUMPTION");
                     float oxygen_global = FLAMEGPU->environment.getProperty<float>("OXYGEN_GLOBAL");
                     float oxygen_diffusion = FLAMEGPU->environment.getProperty < float > ("OXYGEN_DIFFUSION");
                     float laplacianO = (oxygen_grid[next_x][j] + oxygen_grid[previous_x][j] + oxygen_grid[i][next_y] + oxygen_grid[i][previous_y] - 4 * oxygen_grid[i][j]) / h;
@@ -213,7 +180,7 @@ FLAMEGPU_STEP_FUNCTION(update_grids) {
                     float attractant_creation_2 =  FLAMEGPU->environment.getProperty<float>("ATTRACTANT_CREATION_2");
 
                     float laplacianO = (attractant_grid[next_x][j] + attractant_grid[previous_x][j] + attractant_grid[i][next_y] +attractant_grid[i][previous_y] - 4 * attractant_grid[i][j]) / h;
-                    new_attractant_grid[i][j] = -0.01f*attractant_grid[i][j] + 0.000001f * laplacianO * attractant_grid[i][j] +attractant_creation_2 * ((density_grid[i][j]) / h)+attractant_creation_1 * ((density_grid[i][j]) / h)+ attractant_creation * ((density_grid_2[i][j]) / h);
+                    new_attractant_grid[i][j] = -0.01f*attractant_grid[i][j] + 0.000001f * laplacianO * attractant_grid[i][j] + attractant_creation * ((density_grid_2[i][j]) / h);
 
                 }
                 if (repellent != 0) {
@@ -222,7 +189,7 @@ FLAMEGPU_STEP_FUNCTION(update_grids) {
                     float repellent_creation_2 =  FLAMEGPU->environment.getProperty<float>("REPELLENT_CREATION_2");
 
                     float laplacianO =(repellent_grid[next_x][j] + repellent_grid[previous_x][j] + repellent_grid[i][next_y] +repellent_grid[i][previous_y] - 4 * repellent_grid[i][j]) / h;
-                    new_repellent_grid[i][j] = -0.001f*repellent_grid[i][j] + 0.00001f * laplacianO * repellent_grid[i][j] +repellent_creation_2 * ((density_grid[i][j]) / h)+repellent_creation_1 * ((density_grid[i][j]) / h) + repellent_creation * ((density_grid_2[i][j]) / h);
+                    new_repellent_grid[i][j] = -0.001f*repellent_grid[i][j] + 0.00001f * laplacianO * repellent_grid[i][j] + repellent_creation * ((density_grid_2[i][j]) / h);
                 }
             }
         }
@@ -238,10 +205,10 @@ FLAMEGPU_STEP_FUNCTION(update_grids) {
             for (int i = 0; i < 128; ++i) {
                 for (int j = 0; j < 128; ++j) {
                     attractant_grid[i][j] += new_attractant_grid[i][j];
-
+/*
                     if (i >= 59 && i <= 68 && j >= 59 && j <= 68)  {
                         attractant_grid[i][j] += 10.0f;
-                    }
+                    }*/
                 }
             }
         }
