@@ -3,8 +3,8 @@ import numpy as np
 from utils import *
 from tsne import *
 import json
-def generate_initial_population(pop_size):
-    return [create_individual() for _ in range(pop_size)]
+def generate_initial_population(pop_size,density):
+    return [create_individual(density) for _ in range(pop_size)]
 
 # Evaluate novelty of each individual
 def evaluate_novelty(population, archive, k=15):
@@ -30,20 +30,40 @@ def crossover(parent1, parent2):
 
 # Mutate an individual
 def mutate(individual, mutation_rate=0.01):
+    parameter_ranges = {
+        "AGENT_COUNT": (18000,18000),
+        "PERSISTENCE_FACTOR": (0.1, 0.9),
+        "SENSING_RANGE": (1, 30),
+        "ALPHA_ATTRACTANT":(10,30),
+        "ALPHA_REPELLENT":(10,30),
+        "BETA_ATTRACTANT": (0.0011, 0.002),
+        "BETA_REPELLENT": (0.0011, 0.002),
+        "ATTRACTANT_CREATION": (0.0, 0.015),
+        "REPELLENT_CREATION": (0.0, 0.0015),
+        "OXYGEN":(0,0),
+        "H": (0,0)
+    }
     l = individual.genotype.to_list()
+    print(l)
     for i in range(individual.genotype.get_length()):
         if random.random() < mutation_rate:
-            l[i] += random.uniform(-0.1, 0.1)
+            min_val, max_val = parameter_ranges[list(parameter_ranges.keys())[i]]
+            m = random.uniform(-max_val,max_val)
+            if (i!= 0 and i!=9 and i!=10):
+                if ((l[i]+m)>=max_val or (l[i]+m)<=min_val):
+                    l[i]-=m
+                else:
+                    l[i] += m
     return Individual(Genotype.from_list(l),None,None,None)
 
 # Main genetic algorithm
-def genetic_algorithm(pop_size, generations, mutation_rate=0.3):
-    population = generate_initial_population(pop_size)
+def genetic_algorithm(pop_size, generations, density,mutation_rate=0.3):
+    population = generate_initial_population(pop_size,density)
     archive = []
 
     for gen in range(generations):
         for index, individual in enumerate(population):
-            individual.phenotype = create_phenotype(individual.genotype,gen,index)
+            individual.phenotype = create_phenotype(individual.genotype,gen,index,density)
             individual.vector = create_vector(individual.phenotype)
         evaluate_novelty(population, archive)
         archive.extend(population)
@@ -65,19 +85,19 @@ def genetic_algorithm(pop_size, generations, mutation_rate=0.3):
     return archive
 
 # Parameters
-pop_size = 4
-generations = 2
-
+pop_size = 10
+generations = 10
+densities = [20,30,40,50,60,70,80,90,100,110,120,130,140,150]
 # Run the genetic algorithm
-archive = genetic_algorithm(pop_size, generations)
-archive_json = []
-for ind in archive:
-    archive_json.append({
-            'genotype': ind.genotype.to_list(),
-            'vector': ind.vector.to_list(),
-            'novelty': ind.novelty
-        })
+for dens in densities:
+    archive = genetic_algorithm(pop_size, generations,dens)
+    archive_json = []
+    for ind in archive:
+        archive_json.append({
+                'genotype': ind.genotype.to_list(),
+                'vector': ind.vector.to_list(),
+                'novelty': ind.novelty
+            })
 
-with open('archive.json', 'w') as f:
-    json.dump(archive_json, f)
-tsne(archive)
+    with open('archive_'+str(dens)+'.json', 'w') as f:
+        json.dump(archive_json, f)

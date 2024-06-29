@@ -140,7 +140,7 @@ FLAMEGPU_STEP_FUNCTION(update_grids) {
                 grid_y=0;
             }
             density_grid[grid_x][grid_y]++;
-            file << timestep << "," << agent_id << "," << agent_x << "," << agent_y << ","<< speed_x << "," << speed_y << "\n";
+            //file << timestep << "," << agent_id << "," << agent_x << "," << agent_y << ","<< speed_x << "," << speed_y << "\n";
         }
 
 
