@@ -128,7 +128,8 @@ FLAMEGPU_STEP_FUNCTION(update_grids) {
             unsigned int agent_id = agent.getID();
             agent_x = agent.getVariable <float > ("x");
             agent_y = agent.getVariable <float > ("y");
-
+            float speed_x = agent.getVariable<float>("speed_x");
+            float speed_y = agent.getVariable<float>("speed_y");
             // Calculate grid coordinatesfor the agent
             int grid_x =(int)  ((agent_x / 20.0f) * 128);
               int grid_y =  (int)  ((agent_y/20.0f)* 128);
@@ -139,7 +140,7 @@ FLAMEGPU_STEP_FUNCTION(update_grids) {
                 grid_y=0;
             }
             density_grid[grid_x][grid_y]++;
-            //file << timestep << "," << agent_id << "," << agent_x << "," << agent_y << "\n";
+            file << timestep << "," << agent_id << "," << agent_x << "," << agent_y << ","<< speed_x << "," << speed_y << "\n";
         }
 
 
